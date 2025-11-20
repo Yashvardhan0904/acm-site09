@@ -1,6 +1,6 @@
 import SectionContainer from '@/components/ui/section-container'
 import EventCard from '@/components/ui/event-card'
-import { upcomingEvents } from '@/data/dummy-data'
+import { upcomingEvents } from '@/lib/data/dummy-data'
 import Link from 'next/link'
 
 export default function MainEventPage() {
