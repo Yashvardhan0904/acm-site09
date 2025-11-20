@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Event } from '@/data/dummy-data'
+import { Event } from '@/lib/data/dummy-data'
 import CyberpunkButton from './cyberpunk-button'
 
 interface EventCardProps {

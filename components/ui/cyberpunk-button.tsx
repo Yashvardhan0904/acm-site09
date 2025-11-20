@@ -7,16 +7,19 @@ interface CyberpunkButtonProps {
   onClick?: () => void
   variant?: 'primary' | 'secondary'
   className?: string
+  type?: "button" | "submit" | "reset"   // ✅ ADD THIS
 }
 
 export default function CyberpunkButton({ 
   children, 
   onClick, 
   variant = 'primary',
-  className = '' 
+  className = '',
+  type = "button"            // ✅ default to "button"
 }: CyberpunkButtonProps) {
   return (
     <motion.button
+      type={type}             // ✅ Apply it here
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
