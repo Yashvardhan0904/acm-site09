@@ -1,6 +1,6 @@
 import SectionContainer from '@/components/ui/section-container'
 import SponsorCard from '@/components/ui/sponsor-card'
-import { sponsors } from '@/data/dummy-data'
+import { sponsors } from '@/lib/data/dummy-data'
 import CyberpunkButton from '@/components/ui/cyberpunk-button'
 
 export default function SponsorsPage() {

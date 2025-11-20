@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Sponsor } from '@/types/event'
+import { Sponsor } from '@/lib/data/dummy-data'
 import Image from 'next/image'
 
 interface SponsorCardProps {
