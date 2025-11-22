@@ -105,8 +105,8 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      {/* RIGHT SIDE — 3D MODEL */}
-      <div className="w-full md:w-1/2 h-[400px] md:h-[650px] mt-10 md:mt-0">
+      {/* RIGHT SIDE — MEDIUM 3D MODEL */}
+      <div className="w-full md:w-[50%] h-[480px] md:h-[780px] mt-10 md:mt-0">
         <Spline scene="/scene.splinecode" />
       </div>
     </section>
