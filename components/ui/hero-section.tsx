@@ -26,7 +26,6 @@ export default function HeroSection() {
   const text2 = "Collaborate";
   const text3 = "Dominate";
 
-  // Accurate typing animation
   const typeText = (fullText: string, setter: any, delay: number) => {
     setter("");
     setTimeout(() => {
@@ -75,7 +74,6 @@ export default function HeroSection() {
           )}
         </h2>
 
-        {/* HEADLINE */}
         <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 font-mono">
           <span className="text-[#ff00ff]">{line1}</span>
           <br />
@@ -90,8 +88,8 @@ export default function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1 }}
         >
-          Join the ultimate tech society building the future of AI, development,
-          and cyber innovation.
+          Join the ultimate tech society building the future of AI,
+          development, and cyber innovation.
         </motion.p>
 
         <motion.div
@@ -105,10 +103,11 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      {/* RIGHT SIDE — MEDIUM 3D MODEL */}
-      <div className="w-full md:w-[50%] h-[480px] md:h-[780px] mt-10 md:mt-0">
+      {/* RIGHT SIDE — WIDER + SHORTER 3D MODEL */}
+      <div className="w-full md:w-[60%] h-[400px] md:h-[580px] mt-10 md:mt-0">
         <Spline scene="/scene.splinecode" />
       </div>
+
     </section>
   );
 }
