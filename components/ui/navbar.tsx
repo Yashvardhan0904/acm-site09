@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const navItems = [
   { name: 'Home', href: '/' },
@@ -15,52 +15,107 @@ const navItems = [
 
 export default function Navbar() {
   const [activeItem, setActiveItem] = useState('Home')
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolling, setScrolling] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolling(window.scrollY > 10)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
-    <nav className="glass-morphism border-b border-acm-cyan/30 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav
+      className={`
+        fixed top-0 w-full z-50 transition-all duration-300 
+        ${scrolling ? 'backdrop-blur-xl bg-black/30 border-b border-acm-cyan/20' 
+                     : 'backdrop-blur-lg bg-black/10 border-b border-transparent'}
+      `}
+    >
+      <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-acm-cyan to-acm-blue rounded-lg flex items-center justify-center">
-              <span className="font-bold text-white">ACM</span>
-            </div>
-            <span className="text-xl font-bold neon-text">TECH SOCIETY</span>
+          <Link href="/" className="flex items-center space-x-3 group">
+            <motion.div
+              animate={{ rotate: [0, 3, -3, 0], scale: [1, 1.06, 1] }}
+              transition={{ duration: 6, repeat: Infinity, repeatType: 'mirror' }}
+              className="w-12 h-12 rounded-xl flex items-center justify-center
+                bg-gradient-to-br from-acm-cyan/40 to-acm-blue/40 
+                group-hover:shadow-[0_0_30px_#00eaff70] transition"
+            >
+              <span className="font-extrabold text-white tracking-wider">ACM</span>
+            </motion.div>
+            <span className="text-xl font-bold neon-text tracking-wide">TECH SOCIETY</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-8 relative">
             {navItems.map((item) => (
-              <Link
+              <motion.div
                 key={item.name}
-                href={item.href}
-                className="relative px-3 py-2 text-sm font-medium transition-all duration-300"
                 onMouseEnter={() => setActiveItem(item.name)}
-                onMouseLeave={() => setActiveItem('Home')}
+                className="relative"
               >
-                <span className="relative z-10">{item.name}</span>
+                <Link
+                  href={item.href}
+                  className="px-3 py-2 text-sm font-medium text-gray-200 hover:text-white transition"
+                >
+                  {item.name}
+                </Link>
+
                 {activeItem === item.name && (
                   <motion.div
-                    className="absolute inset-0 bg-acm-cyan/20 rounded-lg neon-glow"
                     layoutId="navbar-active"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="absolute inset-0 rounded-lg bg-acm-cyan/20 neon-glow"
+                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                   />
                 )}
-                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-acm-cyan transition-all duration-300 group-hover:w-full" />
-              </Link>
+              </motion.div>
             ))}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button className="p-2 rounded-lg glass-morphism neon-glow">
-              <div className="w-6 h-0.5 bg-white mb-1.5"></div>
-              <div className="w-6 h-0.5 bg-white mb-1.5"></div>
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden p-2 rounded-lg bg-white/5 border border-white/10 neon-glow"
+          >
+            <div className="space-y-1.5">
               <div className="w-6 h-0.5 bg-white"></div>
-            </button>
-          </div>
+              <div className="w-6 h-0.5 bg-white"></div>
+              <div className="w-6 h-0.5 bg-white"></div>
+            </div>
+          </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden bg-black/40 backdrop-blur-xl border-t border-white/10 px-6 pb-4"
+          >
+            <div className="flex flex-col space-y-4 py-4">
+              {navItems.map((item, i) => (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="block text-gray-200 text-lg hover:text-white"
+                  >
+                    {item.name}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   )
 }

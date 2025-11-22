@@ -39,3 +39,32 @@
     @apply bg-gradient-to-r from-acm-cyan to-acm-magenta bg-clip-text text-transparent;
   }
 }
+/* Neon text gradient */
+.text-gradient {
+  background: linear-gradient(90deg, #00E5FF, #FF00CC);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 30px rgba(0,229,255,0.08));
+}
+
+/* Neon text soft glow */
+.neon-text {
+  text-shadow: 0 4px 18px rgba(0,229,255,0.08), 0 0 18px rgba(255,0,204,0.04);
+}
+
+/* Generic neon glow utility */
+.neon-glow {
+  box-shadow: 0 6px 40px rgba(0,229,255,0.06), 0 0 80px rgba(255,0,204,0.04);
+}
+
+/* smaller helper to prevent overflow issues on images */
+img { display: block; }
+
+/* Optional: scrollbar themed */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,#00E5FF,#FF00CC);
+  border-radius: 99px;
+  opacity: 0.9;
+}

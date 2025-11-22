@@ -1,95 +1,114 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
-import CyberpunkButton from './cyberpunk-button'
-import FloatingParticles from '../animations/floating-particles'
+import { useEffect, useState } from "react";
+import { motion, Variants } from "framer-motion";
+import CyberpunkButton from "./cyberpunk-button";
+import Spline from "@splinetool/react-spline";
+
+// Animation
+const popAnimation: Variants = {
+  initial: { scale: 0.2, opacity: 0 },
+  animate: {
+    scale: 1,
+    opacity: 1,
+    transition: { type: "spring", stiffness: 300, damping: 10 },
+  },
+};
 
 export default function HeroSection() {
+  const [acm, setAcm] = useState("");
+  const [line1, setLine1] = useState("");
+  const [line2, setLine2] = useState("");
+  const [line3, setLine3] = useState("");
+
+  const fullAcm = "ACM";
+  const text1 = "Innovate";
+  const text2 = "Collaborate";
+  const text3 = "Dominate";
+
+  // Accurate typing animation
+  const typeText = (fullText: string, setter: any, delay: number) => {
+    setter("");
+    setTimeout(() => {
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < fullText.length) {
+          setter(fullText.slice(0, i + 1));
+          i++;
+        } else clearInterval(interval);
+      }, 150);
+    }, delay);
+  };
+
+  useEffect(() => {
+    const speed = 150;
+    const delayAcm = 0;
+    const delay1 = delayAcm + fullAcm.length * speed + 400;
+    const delay2 = delay1 + text1.length * speed + 400;
+    const delay3 = delay2 + text2.length * speed + 400;
+
+    typeText(fullAcm, setAcm, delayAcm);
+    typeText(text1, setLine1, delay1);
+    typeText(text2, setLine2, delay2);
+    typeText(text3, setLine3, delay3);
+  }, []);
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <FloatingParticles />
+    <section className="relative min-h-screen w-full flex flex-col md:flex-row items-center justify-between bg-[#040814] px-6 md:px-16">
       
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-acm-blue/20 via-transparent to-acm-cyan/20" />
-      
-      <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+      {/* LEFT SIDE — TEXT */}
+      <div className="max-w-3xl text-left mt-20 md:mt-0 z-10">
+        <h2 className="text-5xl md:text-6xl font-bold mb-6 font-mono text-[#00eaff]">
+          {acm.split("").map((char, idx) =>
+            idx === 0 ? (
+              <motion.span
+                key={idx}
+                variants={popAnimation}
+                initial="initial"
+                animate="animate"
+              >
+                {char}
+              </motion.span>
+            ) : (
+              <span key={idx}>{char}</span>
+            )
+          )}
+        </h2>
+
+        {/* HEADLINE */}
+        <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 font-mono">
+          <span className="text-[#ff00ff]">{line1}</span>
+          <br />
+          <span className="text-[#00ff99]">{line2}</span>
+          <br />
+          <span className="text-[#ffaa00]">{line3}</span>
+        </h1>
+
+        <motion.p
+          className="text-lg md:text-xl text-gray-300 mb-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1 }}
         >
-          {/* ACM Logo Animation */}
-          <motion.div
-            className="w-32 h-32 mx-auto mb-8 bg-gradient-to-r from-acm-cyan to-acm-blue rounded-2xl flex items-center justify-center neon-glow"
-            animate={{ 
-              scale: [1, 1.1, 1],
-              rotate: [0, 5, -5, 0]
-            }}
-            transition={{ 
-              duration: 4,
-              repeat: Infinity,
-              repeatType: 'reverse'
-            }}
-          >
-            <span className="text-4xl font-bold text-white">ACM</span>
-          </motion.div>
+          Join the ultimate tech society building the future of AI, development,
+          and cyber innovation.
+        </motion.p>
 
-          {/* Main Heading */}
-          <motion.h1 
-            className="text-5xl md:text-7xl font-bold mb-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 1 }}
-          >
-            <span className="text-gradient">INNOVATE</span>
-            <br />
-            <span className="text-white">COLLABORATE</span>
-            <br />
-            <span className="text-gradient">DOMINATE</span>
-          </motion.h1>
-
-          {/* Subheading */}
-          <motion.p 
-            className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 1 }}
-          >
-            Join the premier tech society pushing boundaries in software development, 
-            AI, and cutting-edge technology.
-          </motion.p>
-
-          {/* CTA Buttons */}
-          <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 1 }}
-          >
-            <CyberpunkButton>
-              Join Now
-            </CyberpunkButton>
-            <CyberpunkButton variant="secondary">
-              View Events
-            </CyberpunkButton>
-          </motion.div>
+        <motion.div
+          className="flex gap-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 1.2 }}
+        >
+          <CyberpunkButton>Join Now</CyberpunkButton>
+          <CyberpunkButton variant="secondary">View Events</CyberpunkButton>
         </motion.div>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div 
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <div className="w-6 h-10 border-2 border-acm-cyan rounded-full flex justify-center">
-          <motion.div 
-            className="w-1 h-3 bg-acm-cyan rounded-full mt-2"
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-        </div>
-      </motion.div>
+      {/* RIGHT SIDE — 3D MODEL */}
+      <div className="w-full md:w-1/2 h-[400px] md:h-[650px] mt-10 md:mt-0">
+        <Spline scene="/scene.splinecode" />
+      </div>
     </section>
-  )
+  );
 }

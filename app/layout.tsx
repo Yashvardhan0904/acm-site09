@@ -8,7 +8,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'ACM Tech Society - Innovation Through Collaboration',
-  description: 'Join the premier tech society at our college. Explore events, workshops, and connect with like-minded developers.',
+  description:
+    'Join the premier tech society at our college. Explore events, workshops, and connect with like-minded developers.',
 }
 
 export default function RootLayout({
@@ -21,9 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="min-h-screen flex flex-col">
           <Navbar />
-          <main className="flex-1">
-            {children}
-          </main>
+          <main className="flex-1">{children}</main>
           <Footer />
         </div>
       </body>

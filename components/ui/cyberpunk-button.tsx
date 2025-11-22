@@ -1,39 +1,46 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
 
 interface CyberpunkButtonProps {
-  children: React.ReactNode
-  onClick?: () => void
-  variant?: 'primary' | 'secondary'
-  className?: string
-  type?: "button" | "submit" | "reset"   // ✅ ADD THIS
+  children: React.ReactNode;
+  onClick?: () => void;
+  variant?: "primary" | "secondary";
+  className?: string;
+  type?: "button" | "submit" | "reset";
 }
 
-export default function CyberpunkButton({ 
-  children, 
-  onClick, 
-  variant = 'primary',
-  className = '',
-  type = "button"            // ✅ default to "button"
+export default function CyberpunkButton({
+  children,
+  onClick,
+  variant = "primary",
+  className = "",
+  type = "button",
 }: CyberpunkButtonProps) {
+  const base =
+    "relative inline-flex items-center justify-center px-6 py-3 font-semibold rounded-xl transition-all duration-300";
+
+  const primary = `
+    bg-gradient-to-r from-[#00E5FF] via-[#00C4FF] to-[#0099FF]
+    text-black shadow-[0_0_15px_rgba(0,229,255,0.35)]
+    hover:shadow-[0_0_25px_rgba(0,229,255,0.55)]
+    hover:-translate-y-1
+  `;
+
+  const secondary = `
+    border border-[#00E5FF]/40 text-[#D7F9FF]
+    hover:bg-[#00E5FF]/10 hover:border-[#00E5FF]/60
+    hover:-translate-y-1
+  `;
+
   return (
     <motion.button
-      type={type}             // ✅ Apply it here
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      type={type}
       onClick={onClick}
-      className={`
-        relative px-8 py-4 font-bold text-white uppercase tracking-wider
-        border-2 border-acm-cyan rounded-lg
-        bg-gradient-to-r from-acm-blue/50 to-acm-cyan/50
-        transition-all duration-300
-        neon-glow hover:neon-glow
-        ${className}
-      `}
+      whileTap={{ scale: 0.97 }}
+      className={`${base} ${variant === "primary" ? primary : secondary} ${className}`}
     >
-      <span className="relative z-10 neon-text">{children}</span>
-      <div className="absolute inset-0 bg-gradient-to-r from-acm-cyan to-acm-magenta opacity-0 hover:opacity-20 transition-opacity duration-300 rounded-lg" />
+      <span className="relative z-10">{children}</span>
     </motion.button>
-  )
+  );
 }
