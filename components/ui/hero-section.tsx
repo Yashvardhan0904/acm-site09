@@ -55,8 +55,8 @@ export default function HeroSection() {
   return (
     <section className="relative min-h-screen w-full flex flex-col md:flex-row items-center justify-between bg-[#040814] px-6 md:px-16">
       
-      {/* LEFT SIDE — TEXT */}
-      <div className="max-w-3xl text-left mt-20 md:mt-0 z-10">
+      {/* LEFT SIDE — TEXT (shifted right) */}
+      <div className="max-w-3xl text-left mt-20 md:mt-0 z-10 pl-6 md:pl-12">
         <h2 className="text-5xl md:text-6xl font-bold mb-6 font-mono text-[#00eaff]">
           {acm.split("").map((char, idx) =>
             idx === 0 ? (
