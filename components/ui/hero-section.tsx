@@ -20,11 +20,14 @@ export default function HeroSection() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    // use a local non-null canvas reference for inner scopes (classes/closures)
+    const canvasEl = canvas as HTMLCanvasElement;
+
+    const ctx = canvasEl.getContext("2d");
     if (!ctx) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvasEl.width = window.innerWidth;
+    canvasEl.height = window.innerHeight;
 
     const particles: any[] = [];
     const particleCount = 80;
@@ -38,8 +41,8 @@ export default function HeroSection() {
       opacity: number;
 
       constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
+        this.x = Math.random() * canvasEl.width;
+        this.y = Math.random() * canvasEl.height;
         this.size = Math.random() * 1.5 + 0.5;
         this.speedX = Math.random() * 0.3 - 0.15;
         this.speedY = Math.random() * 0.3 - 0.15;
@@ -50,10 +53,10 @@ export default function HeroSection() {
         this.x += this.speedX;
         this.y += this.speedY;
 
-        if (this.x > canvas.width) this.x = 0;
-        if (this.x < 0) this.x = canvas.width;
-        if (this.y > canvas.height) this.y = 0;
-        if (this.y < 0) this.y = canvas.height;
+        if (this.x > canvasEl.width) this.x = 0;
+        if (this.x < 0) this.x = canvasEl.width;
+        if (this.y > canvasEl.height) this.y = 0;
+        if (this.y < 0) this.y = canvasEl.height;
       }
 
       draw() {
@@ -70,8 +73,8 @@ export default function HeroSection() {
     }
 
     function animate() {
-      if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!ctx || !canvasEl) return;
+      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
 
       particles.forEach((particle) => {
         particle.update();
@@ -101,8 +104,8 @@ export default function HeroSection() {
     animate();
 
     const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvasEl.width = window.innerWidth;
+      canvasEl.height = window.innerHeight;
     };
 
     window.addEventListener("resize", handleResize);
