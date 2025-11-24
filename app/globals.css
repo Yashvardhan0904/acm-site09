@@ -87,3 +87,33 @@ img { display: block; }
 .animate-slow-pan {
   animation: slow-pan 16s linear infinite;
 }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rotateSlow {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0%,100% { transform: translate(-50%, -50%) scale(1); opacity: .3; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: .5; }
+}
+
+@keyframes breath {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-fadeIn { animation: fadeIn 0.7s ease forwards; }
+.animate-slideUp { animation: slideUp 0.7s ease forwards; }
+.animate-rotateSlow { animation: rotateSlow 20s linear infinite; }
+.animate-pulseGlow { animation: pulseGlow 4s ease-in-out infinite; }
+.animate-breath { animation: breath 3s ease-in-out infinite; }
