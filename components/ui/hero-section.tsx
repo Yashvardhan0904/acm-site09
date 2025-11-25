@@ -29,8 +29,10 @@ export default function HeroSection() {
   const [line1, setLine1] = useState("");
   const [line2, setLine2] = useState("");
   const [line3, setLine3] = useState("");
+  const [isExiting, setIsExiting] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
+  const rafIdRef = useRef<number>(0);
 
   /* ============================================================
      PARTICLE CANVAS BACKGROUND WITH MOUSE INTERACTION
@@ -38,11 +40,14 @@ export default function HeroSection() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { 
+      alpha: false, 
+      desynchronized: true 
+    });
     if (!ctx) return;
 
     const setSize = () => {
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      const dpr = Math.min(2, window.devicePixelRatio || 1); // Cap DPR at 2 for performance
       canvas.width = Math.floor(window.innerWidth * dpr);
       canvas.height = Math.floor(window.innerHeight * dpr);
       canvas.style.width = `${window.innerWidth}px`;
@@ -67,15 +72,15 @@ export default function HeroSection() {
 
     // Adaptive particle count based on screen width
     const width = window.innerWidth;
-    let count = 100; // default for small screens
-    if (width > 1600) count = 350;   // large desktops
-    else if (width > 1200) count = 250; // medium desktops
-    else if (width > 768) count = 180;  // tablets/desktops
+    let count = 80; // Reduced for better performance
+    if (width > 1600) count = 250;
+    else if (width > 1200) count = 180;
+    else if (width > 768) count = 120;
 
     for (let i = 0; i < count; i++) {
       const baseSize = Math.random() * 1.5 + 0.5;
       const baseOpacity = Math.random() * 0.3 + 0.1;
-      const baseHue = Math.random() * 100 + 250; // Store each particle's unique base hue
+      const baseHue = Math.random() * 100 + 250;
       particles.push({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
@@ -101,17 +106,23 @@ export default function HeroSection() {
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
 
-    let rafId = 0;
     let time = 0;
 
     const animate = () => {
-      time += 0.01;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Stop animation if exiting
+      if (isExiting) {
+        ctx.fillStyle = '#0a0e27';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
 
-      // Update interaction parameters dynamically
+      time += 0.01;
+      ctx.fillStyle = '#0a0e27';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       const width = window.innerWidth;
       let interactionRadius = 100;
       let maxConnectionDist = 100;
@@ -126,7 +137,9 @@ export default function HeroSection() {
         maxConnectionDist = 120;
       }
 
-      // Update particles
+      // Batch style changes
+      const particleUpdates: Array<{x: number, y: number, size: number, hue: number, sat: number, light: number, opacity: number, needsGlow: boolean}> = [];
+
       particles.forEach((p, index) => {
         p.x += p.speedX;
         p.y += p.speedY;
@@ -134,6 +147,7 @@ export default function HeroSection() {
         const dx = p.x - mouseRef.current.x;
         const dy = p.y - mouseRef.current.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
+        let needsGlow = false;
 
         if (dist < interactionRadius && dist > 0) {
           const angle = Math.atan2(dy, dx);
@@ -144,9 +158,9 @@ export default function HeroSection() {
           const proximity = 1 - dist / interactionRadius;
           p.size = p.baseSize * (1 + proximity * 0.8);
           p.opacity = Math.min(p.baseOpacity * (1 + proximity * 2), 0.8);
-          // Each particle shifts from its unique base hue towards a different vibrant color
-          const hueShift = (index % 3) * 120; // Creates variety: 0°, 120°, 240° shifts
+          const hueShift = (index % 3) * 120;
           p.hue = p.baseHue + hueShift * proximity * 0.5;
+          needsGlow = true;
         } else {
           const breathe = Math.sin(time + p.phase) * 0.15;
           p.size = p.baseSize * (1 + breathe);
@@ -164,22 +178,41 @@ export default function HeroSection() {
 
         const sat = 70 + Math.sin(time * 0.5 + index) * 20;
         const light = 60 + Math.sin(time * 0.3 + index * 0.1) * 10;
-        ctx.fillStyle = `hsla(${p.hue}, ${sat}%, ${light}%, ${p.opacity})`;
 
-        if (dist < interactionRadius) {
-          ctx.shadowBlur = 15 * (1 - dist / interactionRadius);
-          ctx.shadowColor = `hsla(${p.hue}, 100%, 70%, 0.8)`;
-        } else ctx.shadowBlur = 0;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
+        particleUpdates.push({
+          x: p.x, 
+          y: p.y, 
+          size: p.size, 
+          hue: p.hue, 
+          sat, 
+          light, 
+          opacity: p.opacity,
+          needsGlow: needsGlow && dist < interactionRadius
+        });
       });
 
-      // Draw connections
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
+      // Draw all particles
+      particleUpdates.forEach(({x, y, size, hue, sat, light, opacity, needsGlow}) => {
+        ctx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, ${opacity})`;
+        
+        if (needsGlow) {
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = `hsla(${hue}, 100%, 70%, 0.8)`;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      ctx.shadowBlur = 0;
+
+      // Draw connections (optimized with fewer checks)
+      const step = width > 1200 ? 1 : 2; // Skip particles on smaller screens
+      for (let i = 0; i < particles.length; i += step) {
+        for (let j = i + step; j < particles.length; j += step) {
           const a = particles[i];
           const b = particles[j];
           const dx = a.x - b.x;
@@ -199,10 +232,10 @@ export default function HeroSection() {
         }
       }
 
-      rafId = requestAnimationFrame(animate);
+      rafIdRef.current = requestAnimationFrame(animate);
     };
 
-    rafId = requestAnimationFrame(animate);
+    rafIdRef.current = requestAnimationFrame(animate);
 
     const handleResize = () => setSize();
     window.addEventListener("resize", handleResize);
@@ -211,9 +244,9 @@ export default function HeroSection() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("touchmove", handleTouchMove);
-      cancelAnimationFrame(rafId);
+      cancelAnimationFrame(rafIdRef.current);
     };
-  }, []);
+  }, [isExiting]);
 
   /* ============================================================
      TYPEWRITER EFFECT
@@ -251,6 +284,10 @@ export default function HeroSection() {
         variants={staggerParent}
         initial="hidden"
         animate="show"
+        exit="hidden"
+        onAnimationStart={(variant) => {
+          if (variant === "hidden") setIsExiting(true);
+        }}
       >
         <div className="flex flex-col justify-center min-h-screen gap-6">
           {/* MAIN TITLE */}
